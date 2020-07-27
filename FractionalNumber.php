@@ -94,17 +94,19 @@ class FractionalNumber
             $this->parseNumber($number);
         }
     }
-    public function compare($value){
-        if(is_integer($value)||is_double($value)){
-            if($value > $this->formatNumber()){
+
+    public function compare($value)
+    {
+        if (is_integer($value) || is_double($value)) {
+            if ($value > $this->formatNumber()) {
                 return $value;
-            }else{
+            } else {
                 return $this->outPut();
             }
-        }else if($value instanceof FractionalNumber){
-            if($value->formatNumber() > $this->formatNumber()){
+        } else if ($value instanceof FractionalNumber) {
+            if ($value->formatNumber() > $this->formatNumber()) {
                 return $value->outPut();
-            }else{
+            } else {
                 return $this->outPut();
             }
         }
