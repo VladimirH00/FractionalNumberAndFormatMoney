@@ -100,7 +100,7 @@ class FractionalNumber
         return (double)$this->value;
     }
 
-    public function sortArray($arr, $type = "asc", $start = 1)
+    static public function sortArray( $arr, $type = "asc", $start = 1)
     {
         if (!is_array($arr)) {
             throw new InvalidArgumentException("был дан не массив");

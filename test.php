@@ -31,7 +31,7 @@ for ($i = 1; $i < 10; $i++) {
     echo $arr[$i]->outPut(".", " ");
     echo "<br>";
 }
-$arr = $arr[1]->sortArray($arr);
+$arr = FractionalNumber::sortArray($arr);
 echo "Значения после сортировки массива<br>";
 for ($i = 1; $i < 10; $i++) {
     echo $arr[$i]->outPut(".", " ");
