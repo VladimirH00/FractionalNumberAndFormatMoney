@@ -1,24 +1,40 @@
 <?php
 require_once "FractionalNumber.php";
-require_once "FormatMoney.php";
+require_once "Money.php";
 
 use VladimirH00\Numbers\FractionalNumber as FractionalNumber;
 
-use VladimirH00\Numbers\FormatMoney as FormatMoney;
+use VladimirH00\Numbers\Money as Money;
 
-$number_one = new FractionalNumber(14, 256, "-");
-$number_two = new FractionalNumber(16, 259, "+");
-echo "Number one изначально : " . $number_one->outPut() . "<br>";
-$number_one->summation($number_two);
-echo "Number one после суммирования с " . $number_two->outPut() . " : " . $number_one->outPut() . "<br>";
-$number_one->subtraction(12.98);
-echo "Number one после вычитания 12.98 : " . $number_one->outPut() . "<br>";
-echo "Number two изначально : " . $number_two->outPut() . "<br>";
-$number_two->multiplication(4);
-echo "Number two после умножения на 4 : " . $number_two->outPut() . "<br>";
-$number_two->divide(5);
-echo "Number two после деления на 5 : " . $number_two->outPut() . "<br>";
-echo "сравнение двух чисел " . $number_one->outPut() . " и " . $number_two->outPut() . " и вывод большего : ";
-echo $number_one->compare($number_two) . "<br>";
-$number_three = new FormatMoney("$", "left", 16, 259, "+");
-echo $number_three->outPut();
+$numberOne = new FractionalNumber("123", "54", "-");
+$numberTwo = new FractionalNumber(16, "00259", "+");
+$numberThree = $numberOne->summation($numberTwo);
+echo "после суммирования : " . $numberThree->outPut(",", " ") . "<br>";
+$numberThree = $numberOne->subtraction($numberTwo);
+echo "после вычитания : " . $numberThree->outPut(",", " ") . "<br>";
+$numberThree = $numberTwo->multiplication($numberOne);
+echo "после умножения : " . $numberThree->outPut(",", " ") . "<br>";
+$numberThree = $numberOne->divide($numberTwo);
+echo "после деления : " . $numberThree->outPut(",", " ") . "<br>";
+echo "сравнение двух чисел " . $numberOne->outPut(",", " ") . " и " . $numberTwo->outPut(",", " ") . " : ";
+echo $numberOne->compare($numberTwo) . "<br>";
+$number_three = new Money("$", "left", 160000, 259, "+");
+echo $number_three->outPut(",", " ") . "<br>";
+$number_three = new Money("руб.", "right", 645382, 0, "+");
+echo $number_three->outPut("/", " ") . "<br>";
+$arr[] = array();
+for ($i = 0; $i < 10; $i++) {
+    $arr[] = new FractionalNumber(rand(0, 1000), rand(0, 100), "+");
+}
+echo "Значения перед сортировкой массива<br>";
+for ($i = 1; $i < 10; $i++) {
+    echo $arr[$i]->outPut(".", " ");
+    echo "<br>";
+}
+$arr = $arr[1]->sortArray($arr);
+echo "Значения после сортировки массива<br>";
+for ($i = 1; $i < 10; $i++) {
+    echo $arr[$i]->outPut(".", " ");
+    echo "<br>";
+}
+

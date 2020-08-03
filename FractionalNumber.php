@@ -2,113 +2,125 @@
 
 namespace VladimirH00\Numbers;
 
+use InvalidArgumentException;
+
+
 class FractionalNumber
 {
 
-    protected $sign;
-    protected $first_part;
-    protected $second_part;
-    protected $separator;
+    private $sign;
+    private $intPart;
+    private $floatPart;
+    private $value;
 
-    public function __construct($first_part, $second_part, $sign, $separator = ",")
+    const SIGN_POSITIVE = "+";
+    const SIGN_NEGATIVE = "-";
+
+    public function __construct($intPart, $floatPart, $sign)
     {
-        $this->first_part = $first_part;
-        $this->second_part = $second_part;
+        if (!in_array($sign, array(
+            self::SIGN_NEGATIVE,
+            self::SIGN_POSITIVE
+        ))) {
+            throw new InvalidArgumentException("не существует такого числового знака");
+        }
+        if ((string)(int)($intPart) != (string)$intPart) {
+            throw new InvalidArgumentException("Неверно введена целая часть");
+        }
+        if ((string)(double)("1." . (string)$floatPart) != "1." . (string)$floatPart) {
+            throw new InvalidArgumentException("Не верно введена дробная часть");
+        }
+        $this->intPart = $intPart;
+        $this->floatPart = $floatPart;
         $this->sign = $sign;
-        $this->separator = $separator;
+
+        $this->value = (double)("" . $sign . $intPart . "." . $floatPart);
     }
 
     private function parseNumber($value)
     {
-        if (strpos($value, "-")) {
-            $this->sign = "-";
-            $value = str_replace("-", "", $value);
-        } else {
-            $this->sign = "+";
+        if ($value == 0) {
+            return new FractionalNumber(0, 0, "+");
         }
-
-        $position_separate = strpos($value, ".");
-        $this->first_part = substr($value, 0, $position_separate);
-        $this->second_part = substr($value, $position_separate + 1);
+        $sign = "+";
+        if ($value < 0) {
+            $sign = "-";
+            $value = substr($value, strpos($value, "-") + 1);
+        }
+        if (!strpos($value, ".")) {
+            return new FractionalNumber($value, 0, $sign);
+        }
+        $separatorPos = strpos("$value", ".");
+        $intPart = substr($value, 0, $separatorPos);
+        $floatPart = substr($value, $separatorPos + 1);
+        return new FractionalNumber($intPart, $floatPart, $sign);
     }
 
-    private function formatNumber()
+    public function outPut($separator, $thousandsSep)
     {
-        $number = $this->outPut();
-        return (double)str_replace($this->separator, ".", $number);
+        return number_format($this->value, mb_strlen($this->floatPart), $separator, $thousandsSep);
     }
 
-    public function outPut()
+    public function summation(FractionalNumber $value)
     {
-        $number = "";
-        if ($this->sign == "-") {
-            return $number .= $this->sign . $this->first_part . $this->separator . $this->second_part;
-        }
-        return $number .= $this->first_part . $this->separator . $this->second_part;
+        $number = $this->value + $value->value;
+        return $this->parseNumber($number);
     }
 
-    public function summation($value)
+    public function subtraction(FractionalNumber $value)
     {
-        if (is_integer($value) || is_double($value)) {
-            $number = $this->formatNumber() + $value;
-            $this->parseNumber($number);
-        }
-        if ($value instanceof FractionalNumber) {
-            $number = $this->formatNumber() + $value->formatNumber();
-            $this->parseNumber($number);
-        }
+        $number = $this->value - $value->value;
+        return $this->parseNumber($number);
     }
 
-    public function subtraction($value)
+    public function multiplication(FractionalNumber $value)
     {
-        if (is_integer($value) || is_double($value)) {
-            $number = $this->formatNumber() - $value;
-            $this->parseNumber($number);
-        }
-        if ($value instanceof FractionalNumber) {
-            $number = $this->formatNumber() - $value->formatNumber();
-            $this->parseNumber($number);
-        }
+        $number = $this->value * $value->value;
+        return $this->parseNumber($number);
     }
 
-    public function multiplication($value)
+    public function divide(FractionalNumber $value)
     {
-        if (is_integer($value) || is_double($value)) {
-            $number = $this->formatNumber() * $value;
-            $this->parseNumber($number);
-        }
-        if ($value instanceof FractionalNumber) {
-            $number = $this->formatNumber() * $value->formatNumber();
-            $this->parseNumber($number);
-        }
+        $number = $this->value / $value->value;
+        return $this->parseNumber($number);
     }
 
-    public function divide($value)
+    public function compare(FractionalNumber $value)
     {
-        if (is_integer($value) || is_double($value)) {
-            $number = $this->formatNumber() / $value;
-            $this->parseNumber($number);
+        if ($this->value < $value) {
+            return -1;
+        } else if ($this->value > $value) {
+            return 1;
         }
-        if ($value instanceof FractionalNumber) {
-            $number = $this->formatNumber() / $value->formatNumber();
-            $this->parseNumber($number);
-        }
+        return 0;
     }
 
-    public function compare($value)
+    public function getValue()
     {
-        if (is_integer($value) || is_double($value)) {
-            if ($value > $this->formatNumber()) {
-                return $value;
-            } else {
-                return $this->outPut();
-            }
-        } else if ($value instanceof FractionalNumber) {
-            if ($value->formatNumber() > $this->formatNumber()) {
-                return $value->outPut();
-            } else {
-                return $this->outPut();
+        return (double)$this->value;
+    }
+
+    public function sortArray($arr, $type = "asc", $start = 1)
+    {
+        if (!is_array($arr)) {
+            throw new InvalidArgumentException("был дан не массив");
+        }
+        if (empty($arr)) {
+            throw new InvalidArgumentException("был дан пустой массив");
+        }
+        for ($i = $start; $i < count($arr); $i++) {
+            for ($j = $start; $j < count($arr) - 1; $j++) {
+                if ($arr[$j]->floatPart > $arr[$j + 1]->floatPart) {
+                    $temp = $arr[$j];
+                    $arr[$j] = $arr[$j + 1];
+                    $arr[$j + 1] = $temp;
+                }
             }
         }
+        if ($type == "desc") {
+            return array_reverse($arr);
+        }
+        return $arr;
     }
+
 }
