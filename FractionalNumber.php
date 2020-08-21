@@ -55,8 +55,11 @@ class FractionalNumber
         $floatPart = substr($value, $separatorPos + 1);
         return new FractionalNumber($intPart, $floatPart, $sign);
     }
-
-    public function outPut($separator, $thousandsSep)
+    public function getFloat()
+    {
+        return $this->floatPart;
+    }
+    public function format($separator, $thousandsSep)
     {
         return number_format($this->value, mb_strlen($this->floatPart), $separator, $thousandsSep);
     }
@@ -83,44 +86,6 @@ class FractionalNumber
     {
         $number = $this->value / $value->value;
         return $this->parseNumber($number);
-    }
-
-    public function compare(FractionalNumber $value)
-    {
-        if ($this->value < $value) {
-            return -1;
-        } else if ($this->value > $value) {
-            return 1;
-        }
-        return 0;
-    }
-
-    public function getValue()
-    {
-        return (double)$this->value;
-    }
-
-    static public function sortArray( $arr, $type = "asc", $start = 1)
-    {
-        if (!is_array($arr)) {
-            throw new InvalidArgumentException("был дан не массив");
-        }
-        if (empty($arr)) {
-            throw new InvalidArgumentException("был дан пустой массив");
-        }
-        for ($i = $start; $i < count($arr); $i++) {
-            for ($j = $start; $j < count($arr) - 1; $j++) {
-                if ($arr[$j]->floatPart > $arr[$j + 1]->floatPart) {
-                    $temp = $arr[$j];
-                    $arr[$j] = $arr[$j + 1];
-                    $arr[$j + 1] = $temp;
-                }
-            }
-        }
-        if ($type == "desc") {
-            return array_reverse($arr);
-        }
-        return $arr;
     }
 
 }
