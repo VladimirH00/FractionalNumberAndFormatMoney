@@ -18,12 +18,12 @@ class Money extends FractionalNumber
         parent::__construct($first_part, $second_part, $sign);
     }
 
-    public function outPut($separator, $thousandsSep)
+    public function format($separator, $thousandsSep)
     {
         if ($this->format == "right") {
-            return "" . parent::outPut($separator, $thousandsSep) . " " . $this->currency;
+            return "" . parent::format($separator, $thousandsSep) . " " . $this->currency;
         } else {
-            return "" . $this->currency . " " . parent::outPut($separator, $thousandsSep);
+            return "" . $this->currency . " " . parent::format($separator, $thousandsSep);
         }
     }
 }

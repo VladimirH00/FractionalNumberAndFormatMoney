@@ -22,13 +22,13 @@ class FractionalNumber
             self::SIGN_NEGATIVE,
             self::SIGN_POSITIVE
         ))) {
-            throw new InvalidArgumentException("не существует такого числового знака");
+            throw new InvalidArgumentException("There is no such numeric sign.");
         }
-        if ((string)(int)($intPart) != (string)$intPart) {
-            throw new InvalidArgumentException("Неверно введена целая часть");
+        if (!preg_match("/^[0-9]*$/", $intPart)) {
+            throw new InvalidArgumentException("Invalid integer part.");
         }
-        if ((string)(double)("1." . (string)$floatPart) != "1." . (string)$floatPart) {
-            throw new InvalidArgumentException("Не верно введена дробная часть");
+        if (!preg_match("/^[0-9]*$/", $floatPart)) {
+            throw new InvalidArgumentException("Invalid float part.");
         }
         $this->intPart = $intPart;
         $this->floatPart = $floatPart;
@@ -39,26 +39,20 @@ class FractionalNumber
 
     private function parseNumber($value)
     {
-        if ($value == 0) {
-            return new FractionalNumber(0, 0, "+");
-        }
-        $sign = "+";
-        if ($value < 0) {
+        if ($value > 0) {
+            $sign = "+";
+        } else {
             $sign = "-";
-            $value = substr($value, strpos($value, "-") + 1);
+            $value *= -1;
         }
-        if (!strpos($value, ".")) {
+        if (!preg_match("/^[0-9]*\.[0-9]*$/", $value)) {
             return new FractionalNumber($value, 0, $sign);
         }
-        $separatorPos = strpos("$value", ".");
-        $intPart = substr($value, 0, $separatorPos);
-        $floatPart = substr($value, $separatorPos + 1);
-        return new FractionalNumber($intPart, $floatPart, $sign);
+        $arrayPart = array();
+        preg_match_all("/[0-9]*/", $value, $arrayPart);
+        return new FractionalNumber($arrayPart[0][0], $arrayPart[0][2], $sign);
     }
-    public function getFloat()
-    {
-        return $this->floatPart;
-    }
+
     public function format($separator, $thousandsSep)
     {
         return number_format($this->value, mb_strlen($this->floatPart), $separator, $thousandsSep);
