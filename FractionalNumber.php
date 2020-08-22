@@ -16,7 +16,7 @@ class FractionalNumber
     const SIGN_POSITIVE = "+";
     const SIGN_NEGATIVE = "-";
 
-    public function __construct($intPart, $floatPart, $sign)
+    public function __construct($intPart, $floatPart, $sign="+")
     {
         if (!in_array($sign, array(
             self::SIGN_NEGATIVE,
